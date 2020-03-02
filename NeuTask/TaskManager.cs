@@ -7,6 +7,8 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Threading;
 
 namespace NeuTask
 {
@@ -44,7 +46,7 @@ namespace NeuTask
         /// <param name="task">The task.</param>
         public void Push(Task task)
         {
-            TaskList.Add(task);
+            Application.Current.Dispatcher?.Invoke(() => TaskList.Add(task));
         }
 
         /// <summary>
@@ -53,7 +55,7 @@ namespace NeuTask
         /// <param name="task">The task.</param>
         public void Remove(Task task)
         {
-            if (TaskList.Contains(task)) TaskList.Remove(task);
+            if (TaskList.Contains(task)) Application.Current.Dispatcher?.Invoke(() => TaskList.Remove(task));
         }
 
         /// <summary>
@@ -72,7 +74,7 @@ namespace NeuTask
         {
             if (Status == TaskStatus.Running) return;
             _totalTask = 0;
-            TaskList.Clear();
+            Application.Current.Dispatcher?.Invoke(() => TaskList.Clear());
         }
 
         #endregion
@@ -95,7 +97,7 @@ namespace NeuTask
                         CurrentTask.PropertyChanged -= QueueDispatch;
                     else if (value && !_queue)
                     {
-                        DispatchStart();
+                        DispatchStart(true);
                         CurrentTask.PropertyChanged += QueueDispatch;
                     }
                 }
@@ -134,12 +136,17 @@ namespace NeuTask
             if (
                 CurrentTask.Status == TaskStatus.Complete ||
                 CurrentTask.Status == TaskStatus.Failed && CurrentTask.Handled
-                ) TaskList.Remove(CurrentTask);
+            ) Application.Current.Dispatcher?.Invoke(() => TaskList.Remove(CurrentTask));
         }
 
-        private void DispatchStart()
+        private void DispatchStart(bool flag = false)
         {
-            if (Queue && !(CurrentTask is null) && CurrentTask.Status == TaskStatus.Waiting) CurrentTask.Start();
+            if (!flag)
+            {
+                if (Queue && !(CurrentTask is null) && CurrentTask.Status == TaskStatus.Waiting) CurrentTask.Start();
+            }
+            else
+                if (!(CurrentTask is null) && CurrentTask.Status == TaskStatus.Waiting) CurrentTask.Start();
         }
 
         #endregion
