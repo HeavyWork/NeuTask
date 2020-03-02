@@ -14,7 +14,7 @@ namespace NeuTask
     /// <summary>
     /// The main Task class.
     /// </summary>
-    public abstract class Task : INotifyPropertyChanged
+    public abstract class Task : INotifyPropertyChanged, IDisposable
     {
 
         #region DataContext
@@ -77,7 +77,7 @@ namespace NeuTask
             }
         }
 
-        private double _percentage = 0;
+        private double _percentage;
 
         /// <summary>
         /// Current percentage of the task.
@@ -92,6 +92,18 @@ namespace NeuTask
             }
         }
 
+        private bool _handled;
+
+        public bool Handled
+        {
+            get => _handled;
+            set
+            {
+                _handled = value;
+                OnPropertyChanged(nameof(Handled));
+            }
+        }
+
         #endregion
 
         #region Task Core
@@ -99,7 +111,7 @@ namespace NeuTask
         /// <summary>
         /// Start the task.
         /// </summary>
-        public abstract void Run();
+        public abstract void Start();
 
         /// <summary>
         /// Stop the task.
@@ -115,6 +127,19 @@ namespace NeuTask
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        #endregion
+
+        #region Dispose
+
+        public void Dispose()
+        {
+            if (Status == TaskStatus.Running)
+            {
+                Stop();
+            }
+            GC.SuppressFinalize(this);
         }
 
         #endregion
