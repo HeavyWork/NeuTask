@@ -108,13 +108,13 @@ namespace NeuTask
 
         #region TaskManager Status
 
-        public TaskStatus Status => CurrentTask.Status;
+        public TaskStatus Status => CurrentTask?.Status ?? TaskStatus.Undefined;
 
-        public string DisplayStatus => CurrentTask.DisplayStatus;
+        public string DisplayStatus => CurrentTask?.DisplayStatus ?? "";
 
-        public string Message => CurrentTask.Message;
+        public string Message => CurrentTask?.Message ?? "";
 
-        public double TaskPercentage => CurrentTask.Percentage;
+        public double TaskPercentage => CurrentTask?.Percentage ?? 0;
 
         public double TotalPercentage => (TaskList.Count - 1) / (double)_totalTask;
 
