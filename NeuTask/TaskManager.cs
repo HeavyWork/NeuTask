@@ -62,7 +62,7 @@ namespace NeuTask
         public void Stop()
         {
             Queue = false;
-            CurrentTask.Stop();
+            CurrentTask?.Stop();
         }
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace NeuTask
 
         private void DispatchStart()
         {
-            if (Queue && CurrentTask.Status == TaskStatus.Waiting) CurrentTask.Start();
+            if (Queue && !(CurrentTask is null) && CurrentTask.Status == TaskStatus.Waiting) CurrentTask.Start();
         }
 
         #endregion
@@ -185,6 +185,11 @@ namespace NeuTask
 
         private void TaskListCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
+            if (!TaskList.Any())
+            {
+                _totalTask = 0;
+                return;
+            }
             if (e.Action == NotifyCollectionChangedAction.Add) _totalTask++;
             if (CurrentTask != null && CurrentTask.Equals(TaskList[0])) return;
             // Unplug Event Handler
