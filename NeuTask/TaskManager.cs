@@ -202,11 +202,13 @@ namespace NeuTask
             // Unplug Event Handler
             if (CurrentTask != null)
             {
+                if (Queue) CurrentTask.PropertyChanged -= QueueDispatch;
                 CurrentTask.PropertyChanged -= CurrentTaskOnPropertyChanged;
                 CurrentTask.Dispose();
             }
             // Replug Event Handler
             CurrentTask = TaskList[0];
+            if (Queue) CurrentTask.PropertyChanged += QueueDispatch;
             CurrentTask.PropertyChanged += CurrentTaskOnPropertyChanged;
 
             DispatchStart();
