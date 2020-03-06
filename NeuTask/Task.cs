@@ -20,6 +20,11 @@ namespace NeuTask
         #region DataContext
 
         /// <summary>
+        /// The Id of the task.
+        /// </summary>
+        public string Id { get; } = Guid.NewGuid().ToString();
+
+        /// <summary>
         /// The name of the task.
         /// </summary>
         public string Name { get; } = "";
